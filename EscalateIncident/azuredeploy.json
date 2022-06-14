@@ -1,0 +1,492 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": {
+        "title": "",
+        "description": "",
+        "prerequisites": "",
+    "postDeployment": [],
+    "prerequisitesDeployTemplateFile": "",
+    "lastUpdateTime": "",
+"entities": [],
+"tags": [],
+"support": {
+"tier": "community",
+"armtemplate": "Generated from https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Playbook-ARM-Template-Generator"
+},
+"author": {
+"name": ""
+}
+},
+"parameters": {
+"PlaybookName": {
+"defaultValue": "5QC.EscalateIncident",
+"type": "string"
+}
+},
+"variables": {
+"MicrosoftSentinelConnectionName": "[concat('MicrosoftSentinel-', parameters('PlaybookName'))]",
+"Office365ConnectionName": "[concat('Office365-', parameters('PlaybookName'))]",
+"SharepointonlineConnectionName": "[concat('Sharepointonline-', parameters('PlaybookName'))]"
+},
+"resources": [
+{
+"properties": {
+    "provisioningState": "Succeeded",
+    "state": "Enabled",
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+            "$connections": {
+            "defaultValue": {},
+            "type": "Object"
+        }
+    },
+    "triggers": {
+        "Microsoft_Sentinel_alert": {
+            "type": "ApiConnectionWebhook",
+            "inputs": {
+                "body": {
+                    "callback_url": "@{listCallbackUrl()}"
+                },
+                "host": {
+                    "connection": {
+                        "name": "@parameters('$connections')['azuresentinel_2']['connectionId']"
+                    }
+                },
+                "path": "/subscribe"
+            }
+        }
+    },
+    "actions": {
+        "Alert_-_Get_incident": {
+        "runAfter": {},
+        "type": "ApiConnection",
+        "inputs": {
+            "host": {
+                "connection": {
+                    "name": "@parameters('$connections')['azuresentinel_1']['connectionId']"
+                }
+            },
+            "method": "get",
+            "path": "/Incidents/subscriptions/@{encodeURIComponent(triggerBody()?['WorkspaceSubscriptionId'])}/resourceGroups/@{encodeURIComponent(triggerBody()?['WorkspaceResourceGroup'])}/workspaces/@{encodeURIComponent(triggerBody()?['WorkspaceId'])}/alerts/@{encodeURIComponent(triggerBody()?['SystemAlertId'])}"
+        }
+    },
+    "Compose_Email_body": {
+        "runAfter": {
+            "Initialize_Analyst_Comments": [
+                "Succeeded"
+            ]
+        },
+        "type": "Compose",
+        "inputs": "@{variables('Incident Summary')}\n@{variables('Analyst Comments')}\n@{body('Get_file_content_using_path')}"
+    },
+    "Email_Subject": {
+        "runAfter": {
+            "Initialize_email_recipients": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "Email Subject",
+                    "type": "string",
+                    "value": "Sentinel Incident Escalation @{body('Alert_-_Get_incident')?['properties']?['incidentNumber']} - @{body('Alert_-_Get_incident')?['properties']?['title']}"
+                }
+            ]
+        }
+    },
+    "Filter_for_current_workspace": {
+        "runAfter": {
+            "Initialize_Tenant_Array": [
+                "Succeeded"
+            ]
+        },
+        "type": "Query",
+        "inputs": {
+            "from": "@variables('Tenant Array')",
+            "where": "@equals(item()?['workspaceId'], triggerBody()?['WorkspaceId'])"
+        }
+    },
+    "Get_file_content_using_path": {
+        "runAfter": {
+            "target_Report_file_name": [
+                "Succeeded"
+            ]
+        },
+        "type": "ApiConnection",
+        "inputs": {
+            "host": {
+                "connection": {
+                    "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                }
+            },
+            "method": "get",
+            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://5qcloud.sharepoint.com/sites/SOC2'))}/GetFileContentByPath",
+            "queries": {
+                "inferContentType": true,
+                "path": "/Shared Documents/Tickets/Incident Reports/@{variables('target report')}",
+                "queryParametersSingleEncoded": true
+            }
+        }
+    },
+    "Initialize_Analyst_Comments": {
+        "runAfter": {
+            "Get_file_content_using_path": [
+                "Succeeded"
+            ],
+            "Initialize_email_intro": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "Analyst Comments",
+                    "type": "string",
+                    "value": "Analyst's Comments:\n"
+                }
+            ]
+        }
+    },
+    "Initialize_Current_Workspace": {
+        "runAfter": {
+            "Filter_for_current_workspace": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "Current Workspace",
+                    "type": "array",
+                    "value": "@body('Filter_for_current_workspace')"
+                }
+            ]
+        }
+    },
+    "Initialize_Tenant_Array": {
+        "runAfter": {
+            "Parse_JSON": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "Tenant Array",
+                    "type": "array",
+                    "value": [
+                        {
+                            "emailList": [
+                                "SOC@5qcloud.com",
+                                "jake.derkowski@5qcloud.com"
+                            ],
+                            "tenantName": "5qCloud",
+                            "workspaceId": "357dc956-7779-4705-bb4e-99b880cf897e"
+                        },
+                        {
+                            "emailList": [
+                                "mmcconnell@beaconcapital.com",
+                                "sconway@beaconcapital.com"
+                            ],
+                            "tenantName": "Beacon",
+                            "workspaceId": ""
+                        },
+                        {
+                            "emailList": [
+                                "jmattox@behringermail.com",
+                                "ryan.theilman@5qcloud.com"
+                            ],
+                            "tenantName": "Behringer",
+                            "workspaceId": "00316420-f7a8-4b4c-9c92-95039215279c"
+                        },
+                        {
+                            "emailList": [
+                                "pchau@geminirosemont.com",
+                                "gmathieu@geminirosemont.com",
+                                "Support@geminirosemont.com",
+                                "Zquinones@provelocity.com"
+                            ],
+                            "tenantName": "GeminiRosemont",
+                            "workspaceId": "270bf504-be9e-4829-b1ca-b33783fd7b12"
+                        },
+                        {
+                            "emailList": [
+                                "paul@oadevelopment.com",
+                                "melody@oamanagement.com"
+                            ],
+                            "tenantName": "OADevelopment",
+                            "workspaceId": "b6f58170-0e32-4692-8220-565d08a1a88c"
+                        },
+                        {
+                            "emailList": [
+                                "PiedmontSecurityAlerts@5qcloud.com",
+                                "dan.arnold@Piedmontreit.com",
+                                "rob.schmidt@piedmontreit.com"
+                            ],
+                            "tenantName": "Piedmont",
+                            "workspaceId": "5d9d5cc5-76e5-4291-9f4e-9c469a00fa85"
+                        },
+                        {
+                            "emailList": [
+                                "PiedmontSecurityAlerts@5qcloud.com",
+                                "dan.arnold@Piedmontreit.com",
+                                "rob.schmidt@piedmontreit.com"
+                            ],
+                            "tenantName": "PiedmontEngineers",
+                            "workspaceId": "65070a88-054b-47c4-ac2e-df88cb49f481"
+                        },
+                        {
+                            "emailList": [
+                                "kurt.pollex@shopone.com"
+                            ],
+                            "tenantName": "ShopOne",
+                            "workspaceId": "498cdbfb-23b2-451e-b690-1a6364ac61be"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "Initialize_email_intro": {
+        "runAfter": {
+            "Email_Subject": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "Incident Summary",
+                    "type": "string",
+                    "value": "To all,<br/><br/>\n\n5Q SOC received an incident entitled @{body('Alert_-_Get_incident')?['properties']?['title']} at @{triggerBody()?['TimeGenerated']} and we wanted to bring it to your attention. Below you will find analyst's comments and an incident report. <br/>\n\nPlease contact 5Q SOC if there are any questions or concerns.<br/>\n----------------------------------------------------------------------------------------<br/><br/>\n\nI only have to figure out how to get the parse the email list from the variable thats already in the playbook., If you got ideas let me have them"
+                }
+            ]
+        }
+    },
+    "Initialize_email_recipients": {
+        "runAfter": {
+            "Initialize_Current_Workspace": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "email recipients",
+                    "type": "string",
+                    "value": "jake.derkowski@5qcloud.com; jon.mcdonald@5qcloud.com"
+                }
+            ]
+        }
+    },
+    "Parse_JSON": {
+        "runAfter": {
+            "Alert_-_Get_incident": [
+                "Succeeded"
+            ]
+        },
+        "type": "ParseJson",
+        "inputs": {
+            "content": "@body('Alert_-_Get_incident')?['properties']?['Comments']",
+            "schema": {
+                "items": {
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "properties": {
+                            "properties": {
+                                "author": {
+                                    "properties": {
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "objectId": {
+                                            "type": "string"
+                                        },
+                                        "userPrincipalName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "createdTimeUtc": {
+                                    "type": "string"
+                                },
+                                "message": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "name",
+                        "type",
+                        "properties"
+                    ],
+                    "type": "object"
+                },
+                "type": "array"
+            }
+        }
+    },
+    "Send_an_email_(V2)": {
+        "runAfter": {
+            "Compose_Email_body": [
+                "Succeeded"
+            ]
+        },
+        "type": "ApiConnection",
+        "inputs": {
+            "body": {
+                "Body": "<p>@{outputs('Compose_Email_body')}<br>\n<br>\nCurrent Workspace:<br>\n@{body('Filter_for_current_workspace')}<br>\n<br>\nemail recipients:<br>\n@{variables('email recipients')}</p>",
+                "Cc": "SOC@5qcloud.com",
+                "Importance": "High",
+                "Subject": "@variables('Email Subject')",
+                "To": " jake.derkowski@5qcloud.com"
+            },
+            "host": {
+                "connection": {
+                    "name": "@parameters('$connections')['office365']['connectionId']"
+                }
+            },
+            "method": "post",
+            "path": "/v2/Mail"
+        }
+    },
+    "target_Report_file_name": {
+        "runAfter": {
+            "Initialize_email_recipients": [
+                "Succeeded"
+            ]
+        },
+        "type": "InitializeVariable",
+        "inputs": {
+            "variables": [
+                {
+                    "name": "target report",
+                    "type": "string",
+                    "value": "@{triggerBody()?['WorkspaceId']}-@{body('Alert_-_Get_incident')?['properties']?['incidentNumber']}-@{body('Alert_-_Get_incident')?['properties']?['title']}.html"
+                }
+            ]
+        }
+    }
+},
+"outputs": {}
+},
+"parameters": {
+"$connections": {
+"value": {
+    "azuresentinel_1": {
+        "connectionId": "[resourceId('Microsoft.Web/connections', variables('MicrosoftSentinelConnectionName'))]",
+        "connectionName": "[variables('MicrosoftSentinelConnectionName')]",
+        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuresentinel')]",
+        "connectionProperties": {
+            "authentication": {
+                "type": "ManagedServiceIdentity"
+            }
+        }
+    },
+    "azuresentinel_2": {
+        "connectionId": "/subscriptions/a1a21640-263b-45e1-9ad1-be5b4e1eb6ad/resourceGroups/5Q-RG-Playbooks/providers/Microsoft.Web/connections/azuresentinel-10",
+        "connectionName": "azuresentinel-10",
+        "id": "/subscriptions/a1a21640-263b-45e1-9ad1-be5b4e1eb6ad/providers/Microsoft.Web/locations/southcentralus/managedApis/azuresentinel"
+    },
+    "office365": {
+        "connectionId": "[resourceId('Microsoft.Web/connections', variables('Office365ConnectionName'))]",
+        "connectionName": "[variables('Office365ConnectionName')]",
+        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Office365')]"
+    },
+    "sharepointonline": {
+        "connectionId": "[resourceId('Microsoft.Web/connections', variables('SharepointonlineConnectionName'))]",
+        "connectionName": "[variables('SharepointonlineConnectionName')]",
+        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Sharepointonline')]"
+    }
+}
+}
+}
+},
+"name": "[parameters('PlaybookName')]",
+"type": "Microsoft.Logic/workflows",
+"location": "[resourceGroup().location]",
+"tags": {
+"Status": "NeedAnalystsComments",
+"hidden-SentinelTemplateName": "5QC.EscalateIncident",
+"hidden-SentinelTemplateVersion": "1.0"
+},
+"identity": {
+"type": "SystemAssigned"
+},
+"apiVersion": "2017-07-01",
+"dependsOn": [
+"[resourceId('Microsoft.Web/connections', variables('MicrosoftSentinelConnectionName'))]",
+"[resourceId('Microsoft.Web/connections', variables('Office365ConnectionName'))]",
+"[resourceId('Microsoft.Web/connections', variables('SharepointonlineConnectionName'))]"
+]
+},
+{
+"type": "Microsoft.Web/connections",
+"apiVersion": "2016-06-01",
+"name": "[variables('MicrosoftSentinelConnectionName')]",
+"location": "[resourceGroup().location]",
+"kind": "V1",
+"properties": {
+"displayName": "[variables('MicrosoftSentinelConnectionName')]",
+"customParameterValues": {},
+"parameterValueType": "Alternative",
+"api": {
+"id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Azuresentinel')]"
+}
+}
+},
+{
+"type": "Microsoft.Web/connections",
+"apiVersion": "2016-06-01",
+"name": "[variables('Office365ConnectionName')]",
+"location": "[resourceGroup().location]",
+"kind": "V1",
+"properties": {
+"displayName": "[variables('Office365ConnectionName')]",
+"customParameterValues": {},
+"api": {
+"id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Office365')]"
+}
+}
+},
+{
+"type": "Microsoft.Web/connections",
+"apiVersion": "2016-06-01",
+"name": "[variables('SharepointonlineConnectionName')]",
+"location": "[resourceGroup().location]",
+"kind": "V1",
+"properties": {
+"displayName": "[variables('SharepointonlineConnectionName')]",
+"customParameterValues": {},
+"api": {
+"id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/Sharepointonline')]"
+}
+}
+}
+]
+}
