@@ -6,7 +6,7 @@
             "value": "Enrich-email-plus"
         },
         "Resource Name": {
-            "value": "" // TODO: Fill in parameter value
+            "value": "<Log Analytics Workspace name>" 
         }
     }
 }

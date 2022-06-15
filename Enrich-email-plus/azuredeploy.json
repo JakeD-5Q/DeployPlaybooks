@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "5QC.Enrich-email-plus",
+            "defaultValue": "Enrich-email-plus",
             "type": "string"
         },
         "Resource Name": {

@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "5QC.VirusTotalEnrichAllEntites",
+            "defaultValue": "VirusTotalEnrichAllEntites",
             "type": "string"
         }
     },

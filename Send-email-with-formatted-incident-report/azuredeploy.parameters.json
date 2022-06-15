@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "PlaybookName": {
-            "value": "5QC.Send-email-with-formatted-incident-report"
+            "value": "Send-email-with-formatted-incident-report"
         },
         "Company Name": {
-            "value": "" // TODO: Fill in parameter value
+            "value": "" 
         },
         "Company logo link": {
-            "value": "" // TODO: Fill in parameter value
+            "value": "https://azure.microsoft.com/svghandler/azure-sentinel"
         },
         "Report name": {
-            "value": "" // TODO: Fill in parameter value
+            "value": "$CompanyName SOC" 
         }
     }
 }

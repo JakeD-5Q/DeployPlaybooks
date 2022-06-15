@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "5QC.Get-GEOIPdata-tagIncident",
+            "defaultValue": "Get-GEOIPdata-tagIncident",
             "type": "string"
         }
     },

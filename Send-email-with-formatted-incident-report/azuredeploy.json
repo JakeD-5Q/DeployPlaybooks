@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "5QC.Send-email-with-formatted-incident-report",
+            "defaultValue": "Send-email-with-formatted-incident-report",
             "type": "string"
         },
         "Company Name": {
