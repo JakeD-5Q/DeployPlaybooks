@@ -1,3 +1,5 @@
+# deploy all playbooks to sentinel
+
 $EnrichEmail = 'Enrich-email-plus\azuredeploy.json'
 $EnrichEmailParams = 'Enrich-email-plus\azuredeploy.parameters.json'
 
@@ -12,10 +14,3 @@ $FullInvestgationParams = 'Start-CompleteMDEInvestigation\azuredeploy.parameters
 
 $VTEnrichAllEntities = 'VirusTotalEnrichAllEntites\azuredeploy.json'
 $VTEnrichAllEntitiesParams = 'VirusTotalEnrichAllEntites\azuredeploy.parameters.json'
-
-$testTemplate = $VTEnrichAllEntities
-$testParams = $VTEnrichAllEntitiesParams
-
-
-$PowerShellObject = Get-Content -Path $testParams 
-Write-Host $PowerShellObject
