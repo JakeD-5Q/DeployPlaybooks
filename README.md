@@ -44,7 +44,7 @@ All playbooks will have API connections that need to be updated. I plan to try t
 ### To do
 
 - [x] Add 'Deploy to Azure' buttons
-- [] Write README for all
-- [] Organize other playbooks into deployment groups
-- [] put the parameters file for each playbook into their respective group
-- [] Write a script to deploy these playbooks
+- [ ] Write README for all
+- [ ] Organize other playbooks into deployment groups
+- [ ] put the parameters file for each playbook into their respective group
+- [ ] Write a script to deploy these playbooks
