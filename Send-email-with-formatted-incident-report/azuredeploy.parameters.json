@@ -6,13 +6,13 @@
             "value": "Send-email-with-formatted-incident-report"
         },
         "Company Name": {
-            "value": "" 
+            "value": "Company" 
         },
         "Company logo link": {
             "value": "https://azure.microsoft.com/svghandler/azure-sentinel"
         },
         "Report name": {
-            "value": "$CompanyName SOC" 
+            "value": "CompanyName SOC" 
         }
     }
 }
