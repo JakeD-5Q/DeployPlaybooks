@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "Get-GEOIPdata-tagIncident",
+            "defaultValue": "Enrich-Tag-GeoIP",
             "type": "string"
         }
     },

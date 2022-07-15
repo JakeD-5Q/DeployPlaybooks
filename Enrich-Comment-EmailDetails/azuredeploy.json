@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "Enrich-email-plus",
+            "defaultValue": "Enrich-Comment-EmailDetails",
             "type": "string"
         },
         "Resource Name": {

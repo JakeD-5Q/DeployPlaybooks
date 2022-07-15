@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "PlaybookName": {
-            "value": "Send-email-with-formatted-incident-report"
+            "value": "Notify-EmailAnalysts-NewIncident"
         },
         "Company Name": {
             "value": "Company" 

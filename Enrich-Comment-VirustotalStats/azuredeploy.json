@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "VirusTotalEnrichAllEntites",
+            "defaultValue": "Enrich-Comment-VirustotalStats",
             "type": "string"
         }
     },

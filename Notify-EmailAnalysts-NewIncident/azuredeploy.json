@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "Send-email-with-formatted-incident-report",
+            "defaultValue": "Notify-EmailAnalysts-NewIncident",
             "type": "string"
         },
         "Company Name": {
