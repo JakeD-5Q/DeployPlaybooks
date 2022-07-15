@@ -1,4 +1,11 @@
-$MIGuid = "<Enter your managed identity guid here>"
+param(
+    [Parameter(Mandatory = $true)]$PlaybookName
+)
+
+# get the object id of the playbook
+$ID = (Get-AzResource -Name $PlaybookName -ResourceType Microsoft.Logic/workflows).Identity.PrincipalId
+
+$MIGuid = $ID
 $MI = Get-AzureADServicePrincipal -ObjectId $MIGuid
 
 $MDEAppId = "fc780465-2017-40d4-a0c5-307022471b92"
