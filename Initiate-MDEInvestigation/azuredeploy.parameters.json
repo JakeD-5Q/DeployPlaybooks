@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "PlaybookName": {
-            "value": "Start-CompleteMDEInvestigation"
+            "value": "Initiate-MDEInvestigation"
         }
     }
 }

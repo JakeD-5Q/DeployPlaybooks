@@ -30,12 +30,14 @@
             }
         },
         "Company logo link": {
+            "defaultValue": "https://azure.microsoft.com/svghandler/azure-sentinel",
             "type": "string",
             "metadata": {
                 "description": "Enter value for Company logo link"
             }
         },
         "Report name": {
+            "defaultValue": "Contoso SOC",
             "type": "string",
             "metadata": {
                 "description": "Enter value for Report name"

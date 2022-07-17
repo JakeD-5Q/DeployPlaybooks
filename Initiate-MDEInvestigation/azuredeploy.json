@@ -20,7 +20,7 @@
     },
     "parameters": {
         "PlaybookName": {
-            "defaultValue": "Start-CompleteMDEInvestigation",
+            "defaultValue": "Initiate-MDEInvestigation",
             "type": "string"
         }
     },
@@ -416,7 +416,7 @@
             "location": "[resourceGroup().location]",
             "tags": {
                 "LogicAppsCategory": "security",
-                "hidden-SentinelTemplateName": "5QC.Start-CompleteMDEInvestigation",
+                "hidden-SentinelTemplateName": "5QC.Initiate-MDEInvestigation",
                 "hidden-SentinelTemplateVersion": "1.0"
             },
             "identity": {
