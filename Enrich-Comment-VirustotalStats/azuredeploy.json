@@ -3,6 +3,10 @@
         "PlaybookName": {
             "defaultValue": "Enrich-Comment-VirustotalStats",
             "type": "string"
+        },
+        "VirusTotal-APIKey": {
+            "value": "Enter APi Key",
+            "type": "string"
         }
     },
     "variables": {
