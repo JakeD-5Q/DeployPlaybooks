@@ -1,4 +1,4 @@
-# VirusTotalEnrichAllEntities
+# Enrich-Comment-VirustotalStats
 This playbook is designed to replace the 5 or so VirusTotal entity enrichment playbooks by analyzing the types of present entities and then performing the appropriate action (Query the VT database for 1. IP addresses 2. Urls 3. Filehashes)
 
 
