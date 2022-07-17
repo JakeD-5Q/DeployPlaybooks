@@ -6,7 +6,7 @@ This playbook targets all of the email-related incidents that are generated from
 
 This playbook uses an incident trigger, so after a successful deploy you must attach this playbook to an automation rule for it to run automatically.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2FJakeD-5Q%2FDeployPlaybooks%2Fmain%2FEnrich-Comment-EmailDetails%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FJakeD-5Q%2FDeployPlaybooks%2Fmain%2FEnrich-Comment-EmailDetails%2Fazuredeploy.json)
 
 ## Post-Deployment
 

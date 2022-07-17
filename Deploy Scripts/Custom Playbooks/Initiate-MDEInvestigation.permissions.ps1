@@ -1,6 +1,9 @@
 param(
-    [Parameter(Mandatory = $true)]$PlaybookName
+    [Parameter(Mandatory = $true)]$NamePrefix
 )
+
+$BaseName = "Initiate-MDEInvestigation"
+$PlaybookName = $NamePrefix + .$BaseName
 
 # get the object id of the playbook
 $ID = (Get-AzResource -Name $PlaybookName -ResourceType Microsoft.Logic/workflows).Identity.PrincipalId
