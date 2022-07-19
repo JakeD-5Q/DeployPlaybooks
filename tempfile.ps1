@@ -48,6 +48,8 @@ $today = Get-Date -Format "MM-dd-yyyy"
 $suffix = Get-Random -Maximum 100
 $deploySuffix = $today + "_$suffix"
 
+
+
 $deploymentName = "Enrich-email-plus" + $deploySuffix
 $remoteUrl = "https://raw.githubusercontent.com/JakeD-5Q/DeployPlaybooks/main/Enrich-email-plus/azuredeploy.json"
 $yourParameters = ''
